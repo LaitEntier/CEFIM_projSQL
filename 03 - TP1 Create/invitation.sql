@@ -34,8 +34,8 @@ CREATE TABLE inv_personne (
     nom VARCHAR(255) NOT NULL,
     age INT NOT NULL,
     inscription DATE NOT NULL,
-    status_validation BOOLEAN NOT NULL,
-    type_ ENUM('membre', 'non membre') NOT NULL,
-    description_ins TEXT NOT NULL,
-    salaire_annuel DECIMAL(10, 0) NOT NULL
+    status_validation BOOLEAN NOT NULL DEFAULT TRUE,
+    type_ ENUM('membre', 'non membre') NOT NULL DEFAULT 'non membre',
+    description_ins TEXT,
+    salaire_annuel INT NOT NULL
 ) ENGINE=InnoDB;
