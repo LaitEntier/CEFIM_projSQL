@@ -1,4 +1,5 @@
-# Création BDD + Table
+# Insertion des données
+
 ```mysql
 DROP DATABASE IF EXISTS invitation;
 

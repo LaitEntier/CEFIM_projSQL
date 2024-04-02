@@ -29,7 +29,7 @@ SELECT COUNT(*) FROM inv_personne;
 SELECT * FROM inv_personne WHERE age BETWEEN 50 AND 60;
 
 -- proposer une requete avec UCASE(), UPPER(),LCASE(),LOWER()
-SELECT UCASE(prenom), UPPER(nom), LCASE(description_ins), LOWER(type_) FROM inv_personne;
+SELECT UCASE(prenom), LCASE(nom), UPPER(description_ins), LOWER(type_) FROM inv_personne;
 
 -- proposer une requete avec LIKE '%..%'
 SELECT * FROM inv_personne WHERE description_ins LIKE '%brice%';
