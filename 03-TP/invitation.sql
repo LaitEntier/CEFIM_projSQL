@@ -37,5 +37,5 @@ CREATE TABLE inv_personne (
     status_ins BOOLEAN NOT NULL,
     type_ ENUM('membre', 'non membre') NOT NULL,
     description_ins TEXT NOT NULL,
-    salaire_annuel DECIMAL(10, 2) NOT NULL
+    salaire_annuel DECIMAL(10, 0) NOT NULL
 ) ENGINE=InnoDB;
