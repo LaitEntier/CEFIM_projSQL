@@ -1,0 +1,69 @@
+Table location_ski.clients {
+  noCli integer [primary key, not null]
+  nom varchar(30) [not null]
+  prenom varchar(30)
+  adresse varchar(120)
+  cpo varchar(5) [not null]
+  ville varchar(80) [not null]
+}
+
+Table location_ski.fiches {
+  noFic integer [primary key, not null]
+  noCli integer [not null]
+  dateCrea datetime [not null]
+  datePaye datetime
+  etat enum [not null]
+}
+
+Table location_ski.lignesfic {
+  noFic integer [primary key]
+  noLig integer [not null]
+  refart char(8) [not null]
+  depart datetime [not null]
+  retour datetime
+}
+
+Table location_ski.articles {
+  refart char(5) [primary key]
+  designation varchar(80) [not null]
+  codeGam char(5)
+  codeCate char(5)
+}
+
+Table location_ski.grilletarifs {
+  codeGam char(5) [not null]
+  codeCate char(5) [not null]
+  codeTarif char(5)
+}
+
+Table location_ski.gammes {
+  codeGam char(5) [not null]
+  libelle varchar(45) [not null]
+}
+
+Table location_ski.categories {
+  codeCate char(5) [not null]
+  libelle varchar(30) [not null]
+}
+
+Table location_ski.tarifs {
+  codeTarif char(5) [not null]
+  libelle varchar(30) [not null]
+  prixjour decimal(5) [not null]
+}
+
+Ref: "location_ski"."categories"."codeCate" < "location_ski"."grilletarifs"."codeCate"
+
+Ref: "location_ski"."tarifs"."codeTarif" < "location_ski"."grilletarifs"."codeTarif"
+
+Ref: "location_ski"."gammes"."codeGam" < "location_ski"."grilletarifs"."codeGam"
+
+Ref: "location_ski"."grilletarifs"."codeGam" < "location_ski"."articles"."codeGam"
+
+Ref: "location_ski"."grilletarifs"."codeCate" < "location_ski"."articles"."codeCate"
+
+Ref: "location_ski"."articles"."refart" < "location_ski"."lignesfic"."refart"
+
+Ref: "location_ski"."lignesfic"."noFic" > "location_ski"."fiches"."noFic"
+
+Ref: "location_ski"."fiches"."noCli" > "location_ski"."clients"."noCli"

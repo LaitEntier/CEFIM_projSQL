@@ -1,6 +1,7 @@
 # TP3 - CRM
 
 ## Diagramme
+![diagram](diagram.svg)
 ```dbml
 Table client {
   id integer [primary key]
