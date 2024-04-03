@@ -15,12 +15,14 @@ SELECT MIN(salaire_annuel) FROM inv_personne;
 
 -- afficher le nom de la personne du plus petit salaire
 SELECT nom FROM inv_personne WHERE salaire_annuel = (SELECT MIN(salaire_annuel) FROM inv_personne);
-
 --avec ORDER BY
-SELECT * FROM inv_personne ORDER BY salaire_annuel DESC LIMIT 1;
+SELECT * FROM inv_personne ORDER BY salaire_annuel ASC LIMIT 1;
+
 
 -- afficher le nom de la personne du plus gros salaire
 SELECT nom FROM inv_personne WHERE salaire_annuel = (SELECT MAX(salaire_annuel) FROM inv_personne);
+--avec ORDER BY
+SELECT * FROM inv_personne ORDER BY salaire_annuel DESC LIMIT 1;
 
 -- afficher le salaire moyen
 SELECT AVG(salaire_annuel) FROM inv_personne;
