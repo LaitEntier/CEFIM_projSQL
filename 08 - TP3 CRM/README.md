@@ -1,4 +1,4 @@
-# TP3 - CRM
+# TP3 - CRM Customer Relationship Management
 
 ## Diagramme
 ![diagram](diagram.svg)
