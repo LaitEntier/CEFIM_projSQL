@@ -1,7 +1,7 @@
 # TP99 - location_ski
 
 ## Diagramme
-![diagram](diagram.svg)
+![diagram](/img/99%20-%20diagram.svg)
 ```dbml
 Table location_ski.clients {
   noCli integer [primary key, not null]
@@ -317,4 +317,5 @@ JOIN articles ON lignesfic.refart = articles.refart
 JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
 JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
 WHERE articles.codeCate = 'FOA' OR articles.codeCate = 'FOP' OR articles.codeCate = 'SA';
+```
 ```
