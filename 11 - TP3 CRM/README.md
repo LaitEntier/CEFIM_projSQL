@@ -1,7 +1,7 @@
 # TP3 - CRM Customer Relationship Management
 
 ## Diagramme
-![diagram](diagram.svg)
+![diagram](/img/11%20-%20diagram.svg)
 ```dbml
 Table client {
   id integer [primary key]
