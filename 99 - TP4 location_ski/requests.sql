@@ -1,73 +1,3 @@
-/*
-DROP DATABASE IF EXISTS location_skis;
-
-CREATE DATABASE IF NOT EXISTS location_skis;
-
-USE location_skis;
-
-CREATE TABLE clients (
-    noCli INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(30) NOT NULL,
-    prenom VARCHAR(30),
-    adresse VARCHAR(120),
-    cpo VARCHAR(5) NOT NULL,
-    ville VARCHAR(80) NOT NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE fiches (
-    noFic INT AUTO_INCREMENT PRIMARY KEY,
-    noCli INT NOT NULL,
-    dateCrea DATETIME NOT NULL,
-    datePaye DATETIME,
-    etat ENUM('SO', 'EC', 'RE') NOT NULL,
-    FOREIGN KEY (noCli) REFERENCES clients(noCli)
-) ENGINE=InnoDB;
-
-CREATE TABLE gammes (
-    codeGam CHAR(5) PRIMARY KEY,
-    libelle VARCHAR(30) NOT NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE categories (
-    codeCate CHAR(5) PRIMARY KEY,
-    libelle VARCHAR(30) NOT NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE tarifs (
-    codeTarif CHAR(5) PRIMARY KEY,
-    libelle VARCHAR(30) NOT NULL,
-    prixJour FLOAT NOT NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE grilletarifs (
-    codeGam CHAR(5),
-    codeCate CHAR(5) NOT NULL,
-    codeTarif CHAR(5),
-    FOREIGN KEY (codeGam) REFERENCES gammes(codeGam),
-    FOREIGN KEY (codeTarif) REFERENCES tarifs(codeTarif),
-    FOREIGN KEY (codeCate) REFERENCES categories(codeCate)
-) ENGINE=InnoDB;
-
-CREATE TABLE articles (
-    refart CHAR(8) PRIMARY KEY,
-    designation VARCHAR(80) NOT NULL,
-    codeGam CHAR(5),
-    codeCate CHAR(5),
-    FOREIGN KEY (codeGam) REFERENCES gammes(codeGam),
-    FOREIGN KEY (codeCate) REFERENCES categories(codeCate)
-) ENGINE=InnoDB;
-
-CREATE TABLE lignesfic (
-    noFic INT,
-    noLig INT,
-    refart CHAR(8) NOT NULL,
-    depart DATETIME NOT NULL,
-    retour DATETIME,
-    FOREIGN KEY (noFic) REFERENCES fiches(noFic),
-    FOREIGN KEY (refart) REFERENCES articles(refart)
-) ENGINE=InnoDB;
-*/
-
 -- liste des clients dont le nom commence par d
 SELECT * FROM clients WHERE nom LIKE 'd%';
 
@@ -183,16 +113,57 @@ GROUP BY fiches.noFic
 WITH ROLLUP;
 
 -- calcul du nombre d’articles actuellement en cours de location
+SELECT COUNT(*) AS nb_articles_en_location
+FROM lignesfic
+WHERE retour IS NULL;
 
 -- calcul du nombre d’articles loués, par client
+SELECT clients.nom, clients.prenom, COUNT(lignesfic.refart) AS nb_articles_loues
+FROM clients
+JOIN fiches ON clients.noCli = fiches.noCli
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+GROUP BY clients.noCli;
 
 -- liste des clients qui ont effectué (ou sont en train d’effectuer) plus de 200€ de location
+SELECT clients.noCli, clients.nom, clients.prenom, SUM(tarifs.prixJour) AS cout_total
+FROM clients
+JOIN fiches ON clients.noCli = fiches.noCli
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
+JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
+HAVING SUM(tarifs.prixJour) > 200;
 
--- liste de tous les articles (loués au moins une fois) et le nombre de fois où ils ont été loués, triés du plus loué au moins loué
+-- liste des articles qui ont été loués au moins 3 fois
+SELECT articles.refart, articles.designation, COUNT(lignesfic.refart) AS nb_locations
+FROM articles
+JOIN lignesfic ON articles.refart = lignesfic.refart
+GROUP BY articles.refart
+HAVING nb_locations >= 3
+ORDER BY nb_locations DESC;
 
 -- liste des fiches (n°, nom, prénom) de moins de 150€
+SELECT fiches.noFic, clients.nom, clients.prenom, SUM(tarifs.prixJour) AS total
+FROM fiches
+JOIN clients ON fiches.noCli = clients.noCli
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
+JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
+GROUP BY fiches.noFic
+HAVING total < 150;
 
 -- calcul de la moyenne des recettes de location de surf (combien peut-on espérer gagner pour une location d'un surf ?)
+SELECT AVG(tarifs.prixJour) AS recette_moyenne
+FROM articles
+JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
+JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
+WHERE articles.codeCate = 'SURF';
 
 -- calcul de la durée moyenne d'une location d'une paire de skis (en journées entières)
-
+SELECT ROUND(AVG(DATEDIFF(lignesfic.retour, lignesfic.depart))) AS duree_moyenne_arrondie
+FROM lignesfic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
+JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
+WHERE articles.codeCate = 'FOA' OR articles.codeCate = 'FOP' OR articles.codeCate = 'SA';
