@@ -33,5 +33,5 @@ WHERE facture.date_paiement IS NULL;
 -- afficher les factures en retard de paiment 30 jours max avec le nombre de jours de retard
 SELECT facture.reference, DATEDIFF(CURRENT_DATE, facture.date_crea) AS retard
 FROM facture
-WHERE facture.date_crea IS NOT NULL
+WHERE facture.date_crea IS NOT NULL AND facture.date_paiement IS NULL
 AND DATEDIFF(CURRENT_DATE, facture.date_crea) <= 30;
