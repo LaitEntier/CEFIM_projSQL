@@ -1,7 +1,7 @@
 # TP99 - location_ski
 
 ## Diagramme
-![diagram](diagram.svg)
+![diagram](/img/99%20-%20diagram.svg)
 ```dbml
 Table location_ski.clients {
   noCli integer [primary key, not null]
