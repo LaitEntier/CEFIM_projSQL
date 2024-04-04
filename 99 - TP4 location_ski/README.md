@@ -117,6 +117,81 @@ JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
 WHERE fiches.noFic = 1002
 GROUP BY lignesfic.refart
 
+-- grille des tarifs
+SELECT gammes.libelle AS gamme, categories.libelle AS categorie, tarifs.libelle AS tarif, tarifs.prixJour
+FROM gammes
+JOIN grilletarifs ON gammes.codeGam = grilletarifs.codeGam
+JOIN categories ON grilletarifs.codeCate = categories.codeCate
+JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif;
+
+-- liste des locations de la catégorie SURF
+SELECT fiches.noFic, articles.designation, lignesfic.depart, lignesfic.retour
+FROM fiches
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN categories ON articles.codeCate = categories.codeCate
+WHERE categories.libelle = 'SURF';
+
+-- calcul du nombre moyen d'articles loués par fiche de location
+SELECT AVG(nb_articles) AS nb_moyen_article_par_fiche
+FROM (
+    SELECT noFic, COUNT(refart) AS nb_articles
+    FROM lignesfic
+    GROUP BY noFic
+) AS nb_articles_par_fiche;
+
+-- calcul du nombre de fiches de location établies pour les catégories de location Ski alpin, Surf, Patinette
+SELECT categories.libelle, COUNT(fiches.noFic) AS nb_fiches
+FROM fiches
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN categories ON articles.codeCate = categories.codeCate
+WHERE categories.libelle IN ('Ski alpin', 'Surf', 'Patinette')
+GROUP BY categories.libelle;
+
+-- calcul du montant moyen des fiches de location
+SELECT AVG(total) AS montant_moyen_par_fiche
+FROM (
+    SELECT fiches.noFic, SUM(tarifs.prixJour) AS total
+    FROM fiches
+    JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+    JOIN articles ON lignesfic.refart = articles.refart
+    JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
+    JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
+    GROUP BY fiches.noFic
+) AS total_par_fiche;
+
+-- liste des clients (nom, prénom, adresse, code postal, ville) ayant au moins une fiche de location en cours
+SELECT DISTINCT clients.nom, clients.prenom, clients.adresse, clients.cpo, clients.ville
+FROM clients
+JOIN fiches ON clients.noCli = fiches.noCli
+WHERE fiches.etat = 'EC';
+
+-- détail de la fiche de location de M. Dupond Jean de Paris (avec la désignation des articles loués, la date de départ et de retour)
+SELECT fiches.noFic, articles.designation, lignesfic.depart, lignesfic.retour
+FROM fiches
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN clients ON fiches.noCli = clients.noCli
+WHERE clients.nom = 'Dupond' AND clients.prenom = 'Jean' AND clients.ville = 'Paris';
+
+-- liste de tous les articles (référence, désignation et libellé de la catégorie) dont le libellé de la catégorie contient ski
+SELECT articles.refart, articles.designation, categories.libelle
+FROM articles
+JOIN categories ON articles.codeCate = categories.codeCate
+WHERE categories.libelle LIKE '%ski%';
+
+-- calcul du montant de chaque fiche soldée et du montant total des fiches
+SELECT fiches.noFic, SUM(tarifs.prixJour) AS total
+FROM fiches
+JOIN lignesfic ON fiches.noFic = lignesfic.noFic
+JOIN articles ON lignesfic.refart = articles.refart
+JOIN grilletarifs ON articles.codeGam = grilletarifs.codeGam AND articles.codeCate = grilletarifs.codeCate
+JOIN tarifs ON grilletarifs.codeTarif = tarifs.codeTarif
+WHERE fiches.etat = 'SO'
+GROUP BY fiches.noFic
+WITH ROLLUP;
+
 -- calcul du nombre d’articles actuellement en cours de location
 SELECT COUNT(*) AS nb_articles_en_location
 FROM lignesfic
