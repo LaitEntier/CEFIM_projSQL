@@ -1,10 +1,10 @@
 # TP SQL CEFIM
 
 ## 01 - Demo
-
+![diagram1](img/01%20-%20diagram.svg)
 
 ## 03 - TP1 Create
-
+![diagram2](img/02%20-%20diagram.svg)
 
 ## 04 - Insert
 ```mysql
@@ -89,6 +89,7 @@ SELECT * FROM inv_personne WHERE type_ = 'membre' ORDER BY age;
 ```
 
 ## 11 - TP3 CRM
-
+![diagram11](img/11%20-%20diagram.svg)
 
 ## 99 - TP4 location_ski
+![diagram99](img/99%20-%20diagram.svg)
