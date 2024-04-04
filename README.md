@@ -4,7 +4,7 @@
 ![diagram1](img/01%20-%20diagram.svg)
 
 ## 03 - TP1 Create
-![diagram2](img/02%20-%20diagram.svg)
+![diagram3](img/03%20-%20diagram.svg)
 
 ## 04 - Insert
 ```mysql
